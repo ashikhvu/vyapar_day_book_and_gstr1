@@ -377,7 +377,6 @@ urlpatterns = [
     path('purchase_report',views.purchase_report,name='purchase_report'),
     path('send_sale_report_via_mail',views.send_sale_report_via_mail,name='send_sale_report_via_mail'),
     path('send_purchase_report_via_mail',views.send_purchase_report_via_mail,name='send_purchase_report_via_mail'),
-    path('day_book_report',views.day_book_report,name='day_book_report'),
     
     path('loan_accounts',views.loan_accounts,name='loan_accounts'),
 
@@ -583,8 +582,17 @@ urlpatterns = [
     path('stock_summary_date_filter', views.stock_summary_date_filter, name='stock_summary_date_filter'),
     path('sendEmail_stock_summary', views.sendEmail_stock_summary, name='sendEmail_stock_summary'),
 
+
+    path('gstrr2',views.gstrr2,name='gstrr2'),
+    path('sharepurchaseBillToEmail',views.sharepurchaseBillToEmail,name='sharepurchaseBillToEmail'),
+    path('shareGSTR2purchaseBillToEmail',views.shareGSTR2purchaseBillToEmail,name='shareGSTR2purchaseBillToEmail'),
+
     # ashikh
+    path('day_book_report',views.day_book_report,name='day_book_report'),
     path('day_book_report_send_mail', views.day_book_report_send_mail, name='day_book_report_send_mail'),
+    path('gstrnew1',views.gstrnew1,name='gstrnew1'),
+    path('gstrnew1_pdf',views.gstrnew1_pdf,name='gstrnew1_pdf'),
+    path('gstrnew2_pdf',views.gstrnew2_pdf,name='gstrnew2_pdf'),
    
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     

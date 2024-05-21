@@ -18292,7 +18292,7 @@ def sendEmail_stock_summary(request):
             messages.error(request, f'{e}')
             return redirect(stock_summary)
 
-import datetime
+from datetime import date
 from django.db.models import CharField
 
 def day_book_report(request):
@@ -18363,10 +18363,10 @@ def day_book_report(request):
     )
 
   else:
-    date_today = datetime.date.today().strftime('%Y-%m-%d')
-
-    from_date = ''
-    to_date = ''
+    date_today = date.today().strftime('%Y-%m-%d')
+    print(f'{date_today}\n entered here')
+    from_date = date_today
+    to_date = from_date
   
     daybook_history = list(
       PurchaseBill.objects.filter(company=cmp,billdate=date_today).annotate(
@@ -18521,7 +18521,7 @@ def day_book_report_send_mail(request):
     )
   else:
     print('date validation failed')
-    date_today = datetime.date.today().strftime('%Y-%m-%d')
+    date_today = date.today().strftime('%Y-%m-%d')
 
     from_date = ''
     to_date = ''
@@ -18612,8 +18612,15 @@ def gstrnew1(request):
   comp =  company.objects.get(id = staff.company.id)
   allmodules= modules_list.objects.get(company=staff.company,status='New')
 
-  inv = SalesInvoice.objects.filter(company=comp.id)
-  c_note = CreditNote.objects.filter(company=comp.id)
+  from_date = request.POST.get('from_date')
+  to_date = request.POST.get('to_date')
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    inv = SalesInvoice.objects.filter(company=comp.id,date__range=[from_date,to_date])
+    c_note = CreditNote.objects.filter(company=comp.id,date__range=[from_date,to_date])  
+  else:
+    inv = SalesInvoice.objects.filter(company=comp.id)
+    c_note = CreditNote.objects.filter(company=comp.id)
 
   context={
     'staff':staff,
@@ -18621,5 +18628,119 @@ def gstrnew1(request):
     'allmodules':allmodules,
     "inv":inv,
     "c_note":c_note,
+    "from_date":from_date,
+    "to_date":to_date,
   }
   return render(request, 'company/gstr_1.html',context)
+
+def gstrnew1_pdf(request):
+  print("inside function")
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  party_name = request.POST.get('partyname')
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date=request.POST['fdate']
+  to_date=request.POST['tdate']
+
+  print(f"from: {from_date}\tto: {to_date}")
+
+  # from_date = datetime.strftime(from_date,"%Y-%m-%d")
+  # to_date = datetime.strftime(to_date,"%Y-%m-%d")
+
+  search=request.POST['search']
+  filters_by=request.POST['filter']
+  emails_string = request.POST['email']
+  emails= [email.strip() for email in emails_string.split(',')]
+  mess=request.POST['message']
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    inv = SalesInvoice.objects.filter(company=cmp.id,date__range=[from_date,to_date])
+    c_note = CreditNote.objects.filter(company=cmp.id,date__range=[from_date,to_date])  
+  else:
+    inv = SalesInvoice.objects.filter(company=cmp.id)
+    c_note = CreditNote.objects.filter(company=cmp.id)
+
+  content={
+  'staff':staff,
+  'sdate':from_date,
+  'edate':to_date,
+  'allmodules':allmodules,
+  'staff':staff,
+  "inv":inv,
+  "c_note":c_note,
+  }
+  template_path = 'company/gstrnew1_pdf.html'
+  template = get_template(template_path)
+
+  html  = template.render(content)
+  result = BytesIO()
+  pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+  pdf = result.getvalue()
+  filename = f'GSTR 1 Report.pdf'
+  email = EmailMessage(mess,from_email=settings.EMAIL_HOST_USER,to=emails)
+  email.attach(filename, pdf, "application/pdf")
+  email.send(fail_silently=False)
+  messages.info(request,'gstr1 report shared via mail')
+  print("mail send succesfully")
+  return redirect('gstrnew1')
+
+def gstrnew2_pdf(request):
+  print("inside function")
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  party_name = request.POST.get('partyname')
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date=request.POST['fdate']
+  to_date=request.POST['tdate']
+
+  print(f"from: {from_date}\tto: {to_date}")
+
+  # from_date = datetime.strftime(from_date,"%Y-%m-%d")
+  # to_date = datetime.strftime(to_date,"%Y-%m-%d")
+
+  search=request.POST['search']
+  filters_by=request.POST['filter']
+  emails_string = request.POST['email']
+  emails= [email.strip() for email in emails_string.split(',')]
+  mess=request.POST['message']
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    inv = SalesInvoice.objects.filter(company=cmp.id,date__range=[from_date,to_date])
+    c_note = CreditNote.objects.filter(company=cmp.id,date__range=[from_date,to_date])  
+  else:
+    inv = SalesInvoice.objects.filter(company=cmp.id)
+    c_note = CreditNote.objects.filter(company=cmp.id)
+
+  content={
+  'staff':staff,
+  'sdate':from_date,
+  'edate':to_date,
+  'allmodules':allmodules,
+  'staff':staff,
+  "inv":inv,
+  "c_note":c_note,
+  }
+  template_path = 'company/gstrnew2_pdf.html'
+  template = get_template(template_path)
+
+  html  = template.render(content)
+  result = BytesIO()
+  pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+  pdf = result.getvalue()
+  filename = f'GSTR 1 Report.pdf'
+  email = EmailMessage(mess,from_email=settings.EMAIL_HOST_USER,to=emails)
+  email.attach(filename, pdf, "application/pdf")
+  email.send(fail_silently=False)
+  messages.info(request,'gstr1 report shared via mail')
+  print("mail send succesfully")
+  return redirect('gstrnew1')
