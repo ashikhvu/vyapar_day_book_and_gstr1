@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSTR 1 Report</title>
+    <title>Sale/Purchase By Item Report</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -13,12 +13,10 @@
         <div class="col-md-4">
             <div class="card-group w-100 mx-auto d-block"> 
                 <h2 style="color:red; text-align: center;">{{staff.company.company_name}}</h2>
-            <h4 style="text-align: center;">GSTR 1 Report</h4>
+            <h4 style="text-align: center;">Sale/Purchase By Item Report</h4>
             <h5 style="text-align: center;">
-                <span id="s1date" style="color:black; text-align: center;">{{sdate}}</span>
-                <span id="e1date" style="color:black; text-align: center;">{{edate}}</span></h5>
-            
-
+                <span id="s1date" style="color:black; text-align: center;">{{sdate|date:"Y-m-d"}}</span>
+                <span id="e1date" style="color:black; text-align: center;">{{edate|date:"Y-m-d"}}</span></h5>
             </div>
         </div>
        
@@ -70,57 +68,25 @@
                 </div>
             </div>
         </div> -->
+        <p>Total Sales Amount: {{ final_total_sale_amount }}</p>
+        <p>Total Purchase Amount:{{ final_total_purch_amount }}</p>
 
-        <table class="table table-bordered" id="myTable1">
+        <table class="table table-bordered mt-2" id="myTable1">
             <thead style="color: blue;">
-                <tr class="text-center"
-                    style="background-color: rgba(255, 255, 255, 0.137);">
-
-                    <th colspan="5" style="text-align: center; font-size: 12px;">Invoice
-                        Details</th>
-                    <th rowspan="2" style="text-align: center; font-size: 12px;">Tax Rate
-                    </th>
-                    <th rowspan="2" style="text-align: center; font-size: 12px;">Cess Rate
-                    </th>
-                    <th rowspan="2" style="text-align: center; font-size: 12px;">Taxable
-                        Value</th>
-                    <th colspan="4" style="text-align: center; font-size: 12px;">Amount</th>
-                    <th rowspan="2" style="text-align: center; font-size: 12px;">Place Of
-                        Supply(Name Of State)</th>
-                </tr>
-                <tr class="text-center"
-                    style="background-color: rgba(255, 255, 255, 0.137);">
-                    <th style="text-align: center; font-size: 12px;">GSTIN/UIN</th>
-                    <th style="text-align: center; font-size: 12px;">Party Name</th>
-                    <th style="text-align: center; font-size: 12px;">Invoice No</th>
-                    <th style="text-align: center; font-size: 12px;">Date</th>
-                    <th style="text-align: center; font-size: 12px;">Value</th>
-
-                    <th style="text-align: center; font-size: 12px;">Integrated Tax</th>
-                    <th style="text-align: center; font-size: 12px;">Central Tax</th>
-                    <th style="text-align: center; font-size: 12px;">State/UT Tax</th>
-                    <th style="text-align: center; font-size: 12px;">Cess</th>
-                </tr>
+                <th>SL NO.</th>
+                <th>ITEM NAME</th>
+                <th>SALE AMOUNT</th>
+                <th>PURCHASE AMOUNT</th>
             </thead>
-            <tbody class="tbodyA">
-                {% for i in inv %}
+            <tbody>
+                {% for i in all_transaction %}
                 <tr>
-                    <td>{{ i.party.gst_no }}</td>
-                    <td>{{ i.party.party_name }}</td>
-                    <td>{{ i.invoice_no }}</td>
-                    <td>{{ i.date|date:'Y-m-d' }}</td>
-                    <td>{{ i.subtotal|floatformat:1 }}</td>
-                    <td>{{ i.total_taxamount|floatformat:1 }}</td>
-                    <td>0.0</td>
-                    <td>{{ i.total_taxamount|floatformat:1 }}</td>
-                    <td>{{ i.igst|floatformat:1 }}</td>
-                    <td>{{ i.cgst|floatformat:1 }}</td>
-                    <td>{{ i.sgst|floatformat:1 }}</td>
-                    <td>0.0</td>
-                    <td>{{ i.state_of_supply }}</td>
+                    <td style="text-align: center;">{{ forloop.counter }}</td>
+                    <td style="text-align: center;">{{i.name}}</td>
+                    <td style="text-align: center;">{{ i.sale_amount }}</td>
+                    <td style="text-align: center;">{{ i.purchase_amount }}</td>
                 </tr>
                 {% endfor %}
-            </tbody>
             </tbody>
                 
         </table>

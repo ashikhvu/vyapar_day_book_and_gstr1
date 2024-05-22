@@ -241,7 +241,25 @@
                                             </thead>
                                             <tbody id="items-table-body">
 
-
+                                              {% for i in c_note %}
+                                              <tr>
+                                                  <td>{{ i.party.gst_no }}</td>
+                                                  <td>{{ i.party.party_name }}</td>
+                                                  <td>{{ i.invoiceno }}</td>
+                                                  <td>{{ i.invoice_date|date:'Y-m-d' }}</td>
+                                                  <td>{{ i.retrn_no }}</td>
+                                                  <td>{{ i.date|date:'Y-m-d' }}</td>
+                                                  <td>{{ i.taxamount|floatformat:1 }}</td>
+                                                  <td>0.0</td>
+                                                  <td>0.0</td>
+                                                  <td>{{ i.taxamount|floatformat:1 }}</td>
+                                                  <td>{{ i.igst|floatformat:1 }}</td>
+                                                  <td>{{ i.cgst|floatformat }}</td>
+                                                  <td>{{ i.sgst|floatformat:1 }}</td>
+                                                  <td>0.0</td>
+                                                  <td>{{ i.supplyplace }}</td>
+                                              </tr>
+                                              {% endfor %}
 
                                             </tbody>
 

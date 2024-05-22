@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSTR 1 Report</title>
+    <title>GSTR 2 Report</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -13,7 +13,7 @@
         <div class="col-md-4">
             <div class="card-group w-100 mx-auto d-block"> 
                 <h2 style="color:red; text-align: center;">{{staff.company.company_name}}</h2>
-            <h4 style="text-align: center;">GSTR 1 Report</h4>
+            <h4 style="text-align: center;">GSTR 2 Report</h4>
             <h5 style="text-align: center;">
                 <span id="s1date" style="color:black; text-align: center;">{{sdate}}</span>
                 <span id="e1date" style="color:black; text-align: center;">{{edate}}</span></h5>
@@ -92,7 +92,7 @@
                     style="background-color: rgba(255, 255, 255, 0.137);">
                     <th style="text-align: center; font-size: 12px;">GSTIN/UIN</th>
                     <th style="text-align: center; font-size: 12px;">Party Name</th>
-                    <th style="text-align: center; font-size: 12px;">Invoice No</th>
+                    <th style="text-align: center; font-size: 12px;">Bill No</th>
                     <th style="text-align: center; font-size: 12px;">Date</th>
                     <th style="text-align: center; font-size: 12px;">Value</th>
 
@@ -103,21 +103,21 @@
                 </tr>
             </thead>
             <tbody class="tbodyA">
-                {% for i in inv %}
+                {% for i in purchase_bill %}
                 <tr>
                     <td>{{ i.party.gst_no }}</td>
                     <td>{{ i.party.party_name }}</td>
-                    <td>{{ i.invoice_no }}</td>
-                    <td>{{ i.date|date:'Y-m-d' }}</td>
+                    <td>{{ i.billno }}</td>
+                    <td>{{ i.billdate|date:'Y-m-d' }}</td>
                     <td>{{ i.subtotal|floatformat:1 }}</td>
-                    <td>{{ i.total_taxamount|floatformat:1 }}</td>
+                    <td>{{ i.taxamount|floatformat:1 }}</td>
                     <td>0.0</td>
-                    <td>{{ i.total_taxamount|floatformat:1 }}</td>
+                    <td>{{ i.taxamount|floatformat:1 }}</td>
                     <td>{{ i.igst|floatformat:1 }}</td>
                     <td>{{ i.cgst|floatformat:1 }}</td>
                     <td>{{ i.sgst|floatformat:1 }}</td>
                     <td>0.0</td>
-                    <td>{{ i.state_of_supply }}</td>
+                    <td>{{ i.supplyplace }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

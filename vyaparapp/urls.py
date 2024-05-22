@@ -365,7 +365,6 @@ urlpatterns = [
 
     #_________________________________________________________________________________
     
-    path('gstrr2',views.gstrr2,name='gstrr2'),
     path('gstrnew1',views.gstrnew1,name='gstrnew1'),
     path('sharepurchaseBillToEmail',views.sharepurchaseBillToEmail,name='sharepurchaseBillToEmail'),
     path('shareGSTR2purchaseBillToEmail',views.shareGSTR2purchaseBillToEmail,name='shareGSTR2purchaseBillToEmail'),
@@ -583,7 +582,6 @@ urlpatterns = [
     path('sendEmail_stock_summary', views.sendEmail_stock_summary, name='sendEmail_stock_summary'),
 
 
-    path('gstrr2',views.gstrr2,name='gstrr2'),
     path('sharepurchaseBillToEmail',views.sharepurchaseBillToEmail,name='sharepurchaseBillToEmail'),
     path('shareGSTR2purchaseBillToEmail',views.shareGSTR2purchaseBillToEmail,name='shareGSTR2purchaseBillToEmail'),
 
@@ -593,7 +591,12 @@ urlpatterns = [
     path('gstrnew1',views.gstrnew1,name='gstrnew1'),
     path('gstrnew1_pdf',views.gstrnew1_pdf,name='gstrnew1_pdf'),
     path('gstrnew2_pdf',views.gstrnew2_pdf,name='gstrnew2_pdf'),
-   
+    path('gstrr2',views.gstrr2,name='gstrr2'),
+    path('gstr2new1_pdf',views.gstr2new1_pdf,name='gstr2new1_pdf'),
+    path('gstr2new2_pdf',views.gstr2new2_pdf,name='gstr2new2_pdf'),
+    path('sales_or_purchase_report_by_item',views.sales_or_purchase_report_by_item,name='sales_or_purchase_report_by_item'),
+    path('sales_or_purchase_report_by_item_send_mail',views.sales_or_purchase_report_by_item_send_mail,name='sales_or_purchase_report_by_item_send_mail'),
+
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
     
 ]

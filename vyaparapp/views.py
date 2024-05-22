@@ -8909,23 +8909,7 @@ def importPaymentFromExcel(request):
     
 #End
 
-def gstrr2(request):
-    if 'staff_id' in request.session:
-        staff_id = request.session['staff_id']
-    else:
-        return redirect('/')
 
-    staff = staff_details.objects.get(id=staff_id)
-    comp = company.objects.get(id=staff.company.id)
-
-    # Filter PurchaseBill instances related to the specific company
-    purchasebill = PurchaseBill.objects.filter(company=comp)
-
-    # Filter party instances related to the specific company
-    partydata = party.objects.filter(company=comp)
-    allmodules= modules_list.objects.get(company=staff.company,status='New')
-
-    return render(request, 'company/gstr_2.html', {'staff':staff,'company': comp,'purchasebill': purchasebill, 'partydata': partydata,'allmodules':allmodules})
        
 
 def sharepurchaseBillToEmail(request):
@@ -18726,7 +18710,6 @@ def gstrnew2_pdf(request):
   'sdate':from_date,
   'edate':to_date,
   'allmodules':allmodules,
-  'staff':staff,
   "inv":inv,
   "c_note":c_note,
   }
@@ -18744,3 +18727,292 @@ def gstrnew2_pdf(request):
   messages.info(request,'gstr1 report shared via mail')
   print("mail send succesfully")
   return redirect('gstrnew1')
+
+def gstrr2(request):
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date = request.POST.get('from_date')
+  to_date = request.POST.get('to_date')
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    pur_bill = PurchaseBill.objects.filter(company=cmp.id,billdate__range=[from_date,to_date])
+    pur_return = purchasedebit.objects.filter(company=cmp.id,billdate__range=[from_date,to_date])
+  else:
+    pur_bill = PurchaseBill.objects.filter(company=cmp.id)
+    pur_return = purchasedebit.objects.filter(company=cmp.id)
+
+  context = {
+    'staff':staff,
+    'company': cmp,
+    'purchase_bill': pur_bill, 
+    'purchase_return': pur_return,
+    'allmodules':allmodules,
+    "from_date":from_date,
+    "to_date":to_date,
+  }
+
+  return render(request, 'company/gstr_2.html', context)
+
+def gstr2new1_pdf(request):
+  print("inside function")
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  party_name = request.POST.get('partyname')
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date=request.POST['fdate']
+  to_date=request.POST['tdate']
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    pur_bill = PurchaseBill.objects.filter(company=cmp.id,billdate__range=[from_date,to_date])
+    pur_return = purchasedebit.objects.filter(company=cmp.id,billdate__range=[from_date,to_date])
+  else:
+    pur_bill = PurchaseBill.objects.filter(company=cmp.id)
+    pur_return = purchasedebit.objects.filter(company=cmp.id)
+
+  print(f"from: {from_date}\tto: {to_date}")
+
+  # from_date = datetime.strftime(from_date,"%Y-%m-%d")
+  # to_date = datetime.strftime(to_date,"%Y-%m-%d")
+
+  search=request.POST['search']
+  filters_by=request.POST['filter']
+  emails_string = request.POST['email']
+  emails= [email.strip() for email in emails_string.split(',')]
+  mess=request.POST['message']
+
+  content={
+  'staff':staff,
+  'sdate':from_date,
+  'edate':to_date,
+  'allmodules':allmodules,
+  'staff':staff,
+  'purchase_bill': pur_bill, 
+  'purchase_return': pur_return,
+  }
+  template_path = 'company/gstr2new1_pdf'
+  template = get_template(template_path)
+
+  html  = template.render(content)
+  result = BytesIO()
+  pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+  pdf = result.getvalue()
+  filename = f'GSTR 2 Report.pdf'
+  email = EmailMessage(mess,from_email=settings.EMAIL_HOST_USER,to=emails)
+  email.attach(filename, pdf, "application/pdf")
+  email.send(fail_silently=False)
+  messages.info(request,'gstr2 report shared via mail')
+  print("mail send succesfully")
+  return redirect('gstrr2')
+
+def gstr2new2_pdf(request):
+  print("inside function")
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  party_name = request.POST.get('partyname')
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date=request.POST['fdate']
+  to_date=request.POST['tdate']
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    pur_bill = PurchaseBill.objects.filter(company=cmp.id,billdate__range=[from_date,to_date])
+    pur_return = purchasedebit.objects.filter(company=cmp.id,billdate__range=[from_date,to_date])
+  else:
+    pur_bill = PurchaseBill.objects.filter(company=cmp.id)
+    pur_return = purchasedebit.objects.filter(company=cmp.id)
+
+  print(f"from: {from_date}\tto: {to_date}")
+
+  # from_date = datetime.strftime(from_date,"%Y-%m-%d")
+  # to_date = datetime.strftime(to_date,"%Y-%m-%d")
+
+  search=request.POST['search']
+  filters_by=request.POST['filter']
+  emails_string = request.POST['email']
+  emails= [email.strip() for email in emails_string.split(',')]
+  mess=request.POST['message']
+
+  content={
+  'staff':staff,
+  'sdate':from_date,
+  'edate':to_date,
+  'allmodules':allmodules,
+  'staff':staff,
+  'purchase_bill': pur_bill, 
+  'purchase_return': pur_return,
+  }
+  template_path = 'company/gstr2new2_pdf'
+  template = get_template(template_path)
+
+  html  = template.render(content)
+  result = BytesIO()
+  pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+  pdf = result.getvalue()
+  filename = f'GSTR 2 Report.pdf'
+  email = EmailMessage(mess,from_email=settings.EMAIL_HOST_USER,to=emails)
+  email.attach(filename, pdf, "application/pdf")
+  email.send(fail_silently=False)
+  messages.info(request,'gstr2 report shared via mail')
+  print("mail send succesfully")
+  return redirect('gstrr2')
+
+
+def sales_or_purchase_report_by_item(request):
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date = request.POST.get('from_date')
+  to_date = request.POST.get('to_date')
+
+  items = ItemModel.objects.filter(company=cmp.id)
+  Transaction = list()
+
+  if request.method=="POST" and from_date!='' and to_date!='':
+    for i in items:
+      Transaction += list(
+        SalesInvoiceItem.objects.filter(company=cmp.id,item=i.id,salesinvoice__date__range=[from_date,to_date]).annotate(object_item_id=F('item__id'),object_item_name=F('item__item_name'),object_sale_amount=F('totalamount'),object_purchase_amount=Value("0.0",output_field=CharField()))
+      )+list(
+        PurchaseBillItem.objects.filter(company=cmp.id,product=i.id,purchasebill__billdate__range=[from_date,to_date]).annotate(object_item_id=F('product__id'),object_item_name=F('product__item_name'),object_sale_amount=Value("0.0",output_field=CharField()),object_purchase_amount=F('total'))
+      )
+  else:
+    for i in items:
+      Transaction += list(
+        SalesInvoiceItem.objects.filter(company=cmp.id,item=i.id).annotate(object_item_id=F('item__id'),object_item_name=F('item__item_name'),object_sale_amount=F('totalamount'),object_purchase_amount=Value("0.0",output_field=CharField()))
+      )+list(
+        PurchaseBillItem.objects.filter(company=cmp.id,product=i.id).annotate(object_item_id=F('product__id'),object_item_name=F('product__item_name'),object_sale_amount=Value("0.0",output_field=CharField()),object_purchase_amount=F('total'))
+      )
+
+  
+
+  all_transaction = []
+  total_sale_amount = 0
+  total_purch_amount = 0
+  if items and Transaction:
+    for j in items:
+      for i in Transaction:
+        if i.object_item_id == j.id:
+          total_sale_amount += float(i.object_sale_amount)
+          total_purch_amount += float(i.object_purchase_amount)
+
+      all_transaction.append({
+        "name":j.item_name,
+        "sale_amount":total_sale_amount,
+        "purchase_amount":total_purch_amount,
+      })
+
+  context = {
+    'staff':staff,
+    'company': cmp,
+    'allmodules':allmodules,
+    "from_date":from_date,
+    "to_date":to_date,
+    "Transaction":Transaction,
+    "all_transaction":all_transaction,
+  }
+
+  return render(request, 'company/sales_or_purchase_report_by_item.html', context)
+
+
+def sales_or_purchase_report_by_item_send_mail(request):
+  if 'staff_id' in request.session:
+    staff_id = request.session['staff_id']
+  else:
+    return redirect('/')
+  staff = staff_details.objects.get(id=staff_id)
+  cmp = staff.company 
+  party_name = request.POST.get('partyname')
+  allmodules= modules_list.objects.get(company=cmp,status='New')
+
+  from_date=request.POST['fdate']
+  to_date=request.POST['tdate']
+
+  items = ItemModel.objects.filter(company=cmp.id)
+
+  Transaction= list()
+  if request.method=="POST" and from_date!='' and to_date!='':
+    for i in items:
+      Transaction += list(
+        SalesInvoiceItem.objects.filter(company=cmp.id,item=i.id,salesinvoice__date__range=[from_date,to_date]).annotate(object_item_id=F('item__id'),object_item_name=F('item__item_name'),object_sale_amount=F('totalamount'),object_purchase_amount=Value("0.0",output_field=CharField()))
+      )+list(
+        PurchaseBillItem.objects.filter(company=cmp.id,product=i.id,purchasebill__billdate__range=[from_date,to_date]).annotate(object_item_id=F('product__id'),object_item_name=F('product__item_name'),object_sale_amount=Value("0.0",output_field=CharField()),object_purchase_amount=F('total'))
+      )
+  else:
+    for i in items:
+      Transaction += list(
+        SalesInvoiceItem.objects.filter(company=cmp.id,item=i.id).annotate(object_item_id=F('item__id'),object_item_name=F('item__item_name'),object_sale_amount=F('totalamount'),object_purchase_amount=Value("0.0",output_field=CharField()))
+      )+list(
+        PurchaseBillItem.objects.filter(company=cmp.id,product=i.id).annotate(object_item_id=F('product__id'),object_item_name=F('product__item_name'),object_sale_amount=Value("0.0",output_field=CharField()),object_purchase_amount=F('total'))
+      )
+
+  
+
+  all_transaction = []
+  total_sale_amount = total_purch_amount = final_total_sale_amount = final_total_purch_amount = 0
+
+  if items and Transaction:
+    for j in items:
+      for i in Transaction:
+        if i.object_item_id == j.id:
+          total_sale_amount += float(i.object_sale_amount)
+          total_purch_amount += float(i.object_purchase_amount)
+
+      all_transaction.append({
+        "name":j.item_name,
+        "sale_amount":total_sale_amount,
+        "purchase_amount":total_purch_amount,
+      })
+    final_total_sale_amount += total_sale_amount
+    final_total_purch_amount += total_purch_amount
+
+  
+
+  search=request.POST['search']
+  filters_by=request.POST['filter']
+  emails_string = request.POST['email']
+  emails= [email.strip() for email in emails_string.split(',')]
+  mess=request.POST['message']
+
+  content={
+  'staff':staff,
+  'sdate':from_date,
+  'edate':to_date,
+  'allmodules':allmodules,
+  'staff':staff,
+  "all_transaction":all_transaction,
+  "final_total_sale_amount":final_total_sale_amount,
+  "final_total_purch_amount":final_total_purch_amount,
+  }
+  template_path = 'company/sales_or_purchase_report_by_item_send_mail.html'
+  template = get_template(template_path)
+
+  html  = template.render(content)
+  result = BytesIO()
+  pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+  pdf = result.getvalue()
+  filename = f'sales and purchase by report Report.pdf'
+  email = EmailMessage(mess,from_email=settings.EMAIL_HOST_USER,to=emails)
+  email.attach(filename, pdf, "application/pdf")
+  email.send(fail_silently=False)
+  messages.info(request,'sales/purchase by report report shared via mail')
+  print("mail send succesfully")
+  return redirect('sales_or_purchase_report_by_item')
