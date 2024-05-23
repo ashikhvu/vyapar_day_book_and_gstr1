@@ -18800,7 +18800,7 @@ def gstr2new1_pdf(request):
   'purchase_bill': pur_bill, 
   'purchase_return': pur_return,
   }
-  template_path = 'company/gstr2new1_pdf'
+  template_path = 'company/gstr2new1_pdf.html'
   template = get_template(template_path)
 
   html  = template.render(content)
@@ -18856,7 +18856,7 @@ def gstr2new2_pdf(request):
   'purchase_bill': pur_bill, 
   'purchase_return': pur_return,
   }
-  template_path = 'company/gstr2new2_pdf'
+  template_path = 'company/gstr2new2_pdf.html'
   template = get_template(template_path)
 
   html  = template.render(content)
@@ -18913,12 +18913,15 @@ def sales_or_purchase_report_by_item(request):
         if i.object_item_id == j.id:
           total_sale_amount += float(i.object_sale_amount)
           total_purch_amount += float(i.object_purchase_amount)
-
-      all_transaction.append({
-        "name":j.item_name,
-        "sale_amount":total_sale_amount,
-        "purchase_amount":total_purch_amount,
-      })
+      print(f'\ntotal_sale_amount:{int(total_sale_amount)}\t total_purch_amount:{int(total_purch_amount)}')
+      if int(total_sale_amount) != 0 or int(total_purch_amount) != 0:
+        all_transaction.append({
+          "name":j.item_name,
+          "sale_amount":total_sale_amount,
+          "purchase_amount":total_purch_amount,
+        })
+        total_sale_amount =0
+        total_purch_amount=0
 
   context = {
     'staff':staff,
@@ -18975,12 +18978,15 @@ def sales_or_purchase_report_by_item_send_mail(request):
         if i.object_item_id == j.id:
           total_sale_amount += float(i.object_sale_amount)
           total_purch_amount += float(i.object_purchase_amount)
-
-      all_transaction.append({
-        "name":j.item_name,
-        "sale_amount":total_sale_amount,
-        "purchase_amount":total_purch_amount,
-      })
+      print(f'\ntotal_sale_amount:{int(total_sale_amount)}\t total_purch_amount:{int(total_purch_amount)}')
+      if int(total_sale_amount) != 0 or int(total_purch_amount) != 0:
+        all_transaction.append({
+          "name":j.item_name,
+          "sale_amount":total_sale_amount,
+          "purchase_amount":total_purch_amount,
+        })
+        total_sale_amount =0
+        total_purch_amount=0
     final_total_sale_amount += total_sale_amount
     final_total_purch_amount += total_purch_amount
 

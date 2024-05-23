@@ -293,7 +293,7 @@
                             
                         </div>
                         <div class="mt-3" id="content-div">
-                            <div class="table-responsive">
+                            <div >
                                 
                                 <style>
                                     .hover_effect{
@@ -647,7 +647,7 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                           <th  class="text-light bg-secondary"style="text-align: center; font-size: 11px;">Return No.
+                                           <th  class="text-light bg-secondary"style="text-align: center; font-size: 11px;">Sales Return No.
                                                 <div class="ropdown-toggle dropdown-toggle-split ms-" style="color: black;" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="fas fa-filter filter-button" id="ib9" style="color: black;"></i>
                                                 </div>
@@ -660,7 +660,7 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                           <th  class="text-light bg-secondary"style="text-align: center; font-size: 11px;">Note Date
+                                           <th  class="text-light bg-secondary"style="text-align: center; font-size: 11px;">Sales Return Date
                                                 <div class="ropdown-toggle dropdown-toggle-split ms-" style="color: black;" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="fas fa-filter filter-button" id="ib10" style="color: black;"></i>
                                                 </div>
@@ -930,8 +930,8 @@
                             <th style="text-align: center; font-size: 11px;">Party Name</th>
                             <th style="text-align: center; font-size: 11px;">Invoice No</th>
                             <th style="text-align: center; font-size: 11px;">Invoice Date</th>
-                            <th style="text-align: center; font-size: 11px;">Note No.</th>
-                            <th style="text-align: center; font-size: 11px;">Note Date</th>
+                            <th style="text-align: center; font-size: 11px;">Sales Return No.</th>
+                            <th style="text-align: center; font-size: 11px;">Sales Return Date</th>
                             <th style="text-align: center; font-size: 11px;">Value</th>
                             <th style="text-align: center; font-size: 11px;">Integrated Tax</th>
                             <th style="text-align: center; font-size: 11px;">Central Tax</th>
@@ -1408,14 +1408,14 @@ function exportAsExcel() {
       });
       $(document).ready(function() {
         $("#sales_section").click(function() {
-            $("#myTableA").css("display", "block");
-            $("#myTableB").css("display", "none");
+            $("#myTableA").show();
+            $("#myTableB").hide();
             $("#for_action_changer").attr("action", "{% url 'gstrnew1_pdf' %}");
         });
 
         $("#sales_return_section").click(function() {
-            $("#myTableA").css("display", "none");
-            $("#myTableB").css("display", "block");
+            $("#myTableA").hide();
+            $("#myTableB").show();
             $("#for_action_changer").attr("action", "{% url 'gstrnew2_pdf' %}");
         });
     });
